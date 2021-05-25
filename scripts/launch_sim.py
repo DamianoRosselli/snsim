@@ -11,14 +11,7 @@ def nep_cut(nepc):
             nepc[i][2]=float(nepc[i][2])
     return nepc
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "config_path",
-    default=None,
-    type=str,
-    help="Configuration file")
-parser.add_argument("-fit", action='store_true')
-
+#-- some names are non-intuitive (db_config), you can expand these names to make it clearer 
 keys_dic = {
     'data': [
         'write_path',
@@ -61,7 +54,16 @@ keys_dic = {
         'mean_vpec',
         'sig_vpec']}
 
-parser.add_argument("--write_path",type=str)
+#-- at some point we will need to add a help string for each argument 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "config_path",
+    default=None,
+    type=str,
+    help="Configuration file")
+parser.add_argument("-fit", action='store_true')
+
+parser.add_argument("--write_path",type=str, help='Path where simulation will be written')
 parser.add_argument("--sim_name",type=str)
 parser.add_argument("--band_dic",type=yaml.load)
 parser.add_argument("--write_format", type=str,nargs='+')
@@ -113,7 +115,7 @@ param_dic = {}
 with open(args.config_path, "r") as f:
     yml_config = yaml.safe_load(f)
 
-
+#-- Does this mean that the arguments passed in the command line have priority over the yml file? 
 for K in keys_dic:
     param_dic[K]={}
     for k in keys_dic[K]:
@@ -132,7 +134,9 @@ for K in param_dic:
 param_dic['yaml_path'] = args.__dict__['config_path']
 
 print(param_dic)
-sim = snsim.SnSim(param_dic)
+
+#-- This is where the magic happens
+sim = snsim.Simulator(param_dic)
 sim.simulate()
 
 if args.fit:

@@ -13,7 +13,6 @@ from snsim.constants import C_LIGHT_KMS
 import snsim.scatter as sct
 import snsim.nb_fun as nbf
 
-
 class SN:
     """This class represent SN object.
 
@@ -295,7 +294,6 @@ class SN:
         """
         return fits.table_to_hdu(self.sim_lc)
 
-
 class SNGen:
     """This class set up the random part of the SN generator.
 
@@ -421,7 +419,10 @@ class SNGen:
             ra = host['ra']
             dec = host['dec']
             zcos = host['redshift']
-            vpec = host['vp_sight']
+            try:
+                vpec = host['vp_sight']
+            except:
+                vpec = host['v_radial']
         else:
             ra, dec = self.gen_coord(n_sn, rand_seeds[1])
             zcos = self.gen_zcos(n_sn, z_range, rand_seeds[2])

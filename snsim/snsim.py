@@ -161,7 +161,8 @@ class Simulator:
         self._fit_res = None
         self._random_seed = None
         self._host = None
-        self._obs = scls.ObsTable(**self.obs_parameters)
+        #-- JB: Here it starts to get obscure ... I would make all this more explicit or maybe outside __init__
+        self._obs = scls.ObsTable(**self.obs_parameters) 
         self._generator = scls.SNGen(self.sim_par, host=self.host)
 
     @property
@@ -209,6 +210,7 @@ class Simulator:
 
     @property
     def obs_parameters(self):
+        #-- JB: Why do you change the key names? 
         """Get ObsTable class parameters"""
         params = {'db_file': self.sim_cfg['db_config']
                   ['dbfile_path'], 'survey_prop': self.survey_prop}
@@ -270,6 +272,7 @@ class Simulator:
 
     @property
     def cosmo(self):
+        #-- JB: you can simply return self.sim_cfg['cosmology'] 
         """Get cosmological parameters used in simulation"""
         return {'H0': self.sim_cfg['cosmology']['H0'], 'Om0': self.sim_cfg['cosmology']['Om']}
 
@@ -561,10 +564,14 @@ class Simulator:
 
         SN_ID = 0
         for n, z, rs in zip(n_sn, self.z_span['z_bins'], sn_bins_seed):
+            #-- Create list of supernovae with randomly drawn properties
+            #-- this uses SnGen.__call__ !
             sn_list_tmp = self.generator(n, [z, z + self.z_span['dz']], rs)
             for sn in sn_list_tmp:
+                #-- Apply selection
                 sn.epochs = self.obs.epochs_selection(sn)
                 if sn.pass_cut(self.nep_cut):
+                    #-- sncosmo magic happens here
                     sn.gen_flux()
                     sn.ID = SN_ID
                     SN_ID += 1
