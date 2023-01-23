@@ -120,15 +120,28 @@ class SimSample:
 
         """
         model_name = self.header['model_name']
+        if not isinstance(model_name,str):
+            model_sim=np.zeros(0)
+            for model in model_name:
+                sim_model = ut.init_sn_model(model, self._model_dir)
 
-        sim_model = ut.init_sn_model(model_name, self._model_dir)
+                if 'sct_mod' in self.header:
+                    sct.init_sn_sct_model(sim_model, self.header['sct_mod'])
 
-        if 'sct_mod' in self.header:
-            sct.init_sn_sct_model(sim_model, self.header['sct_mod'])
+                if 'mw_dust' in self.header:
+                    dst_ut.init_mw_dust(sim_model, self.header['mw_dust'])
+                model_sim=np.append(model_sim,sim_model)
+            return model_sim
+                
+        else:
+            sim_model = ut.init_sn_model(model_name, self._model_dir)
 
-        if 'mw_dust' in self.header:
-            dst_ut.init_mw_dust(sim_model, self.header['mw_dust'])
-        return sim_model
+            if 'sct_mod' in self.header:
+                sct.init_sn_sct_model(sim_model, self.header['sct_mod'])
+                
+            if 'mw_dust' in self.header:
+                dst_ut.init_mw_dust(sim_model, self.header['mw_dust'])
+            return sim_model
 
     def _set_obj_effects_model(self, model, ID):
         """Set the model parameters of one obj.

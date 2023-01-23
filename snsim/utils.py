@@ -330,6 +330,23 @@ def init_sn_model(name, model_dir=None):
     return None
 
 
+def init_sn_model_fromsource(name,**kwargs):
+    """Initialise a sncosmo model from built-in sncosmo source.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model.
+ 
+    Returns
+    -------
+    sncosmo.Model
+        sncosmo Model corresponding to input configuration.
+    """
+    source = snc.get_source(name,**kwargs)
+    return  snc.Model(source=source)
+
+
 def snc_fitter(lc, fit_model, fit_par, **kwargs):
     """Fit a given lightcurve with sncosmo.
 
@@ -431,3 +448,20 @@ def print_dic(dic, prefix=''):
             print_dic(dic[K], prefix=prefix + indent)
         else:
             print(prefix + f'{K}: {dic[K]}')
+            
+            
+            
+def Templatelist_SNII_fromsncosmo(): #extract the list on name of built-in sources in sncosmo (for the moment only Vincenzi2019 template)
+	sources = snc.builtins._SOURCES.get_loaders_metadata()
+	iips  = list(source['name'] for source in sources if 'sn ii' in source['type'].lower() and not source['type'].endswith('b') and not source['type'].endswith('n'))
+		
+	listname=[sn for sn in iips if sn.startswith('v19') and not sn.endswith('corr')]
+		
+	listname.extend(['list'])
+	return listname
+	
+	
+	
+	
+	
+	

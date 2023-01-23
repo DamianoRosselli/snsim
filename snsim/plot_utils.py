@@ -25,13 +25,19 @@ def param_text_box(text_ax, model_name, sim_par=None, fit_par=None, pos=[0.01, 0
         The fitted parameters and errors.
 
     """
-    par_dic = {'salt': {'t0': ('$t_0$', '.2f'), 'x0': ('$x_0$', '.2e'),
-                        'mb': ('$m_b$', '.2f'), 'x1': ('$x_1$', '.2f'), 'c': ('$c$', '.3f')},
-               'mw_': {'mw_r_v': ('$R_v$', '.2f'), 'mw_ebv': ('E(B-V)', '.3f')}}
+    par_dic_salt = {'salt': {'t0': ('$t_0$', '.2f'), 'x0': ('$x_0$', '.2e'),
+                    'mb': ('$m_b$', '.2f'), 'x1': ('$x_1$', '.2f'), 'c': ('$c$', '.3f')},
+                    'mw_': {'mw_r_v': ('$R_v$', '.2f'), 'mw_ebv': ('E(B-V)', '.3f')}}
 
     par = {}
     for model in model_name:
-        par = {**par, **par_dic[model]}
+        if model == 'salt':
+            par = {**par, **par_dic_salt[model]}
+        elif model != 'salt':
+            par_dic_no_salt = {model: {'t0': ('$t_0$', '.2f'), 'amplitude': ('amplitude', '.2e'),'mb': ('$m_b$', '.2f')},
+                               'mw_': {'mw_r_v': ('$R_v$', '.2f'), 'mw_ebv': ('E(B-V)', '.3f')}}
+            par = {**par,**par_dic_no_salt[model]}
+       
 
     str = ''
     if sim_par is not None:
@@ -68,6 +74,7 @@ def plot_lc(
         bandcol=None,
         set_main=None,
         set_res=None,
+        phase_limit=[-21,51],
         mtpstyle='seaborn-deep',
         dpi=100,
         savefig=False, savepath='LC', saveformat='png'):
@@ -160,7 +167,7 @@ def plot_lc(
         fig.suptitle(f'SN at redshift z : {z:.5f} and peak at time t$_0$ : {t0:.2f} MJD',
                     fontsize='xx-large')
 
-        plt.xlim(-21 * (1 + z), 51 * (1 + z))
+        plt.xlim(phase_limit[0]* (1 + z), phase_limit[1] * (1 + z))
 
         ax0.spines['right'].set_visible(False)
         ax0.spines['top'].set_visible(False)
@@ -290,6 +297,8 @@ def plot_lc(
             sim_par = {snc_sim_model.param_names[i]: snc_sim_model.parameters[i]
                     for i in range(len(snc_sim_model.param_names))}
             if snc_sim_model.source.name[:-1] == 'salt':
+                sim_par['mb'] = snc_sim_model.source_peakmag('bessellb', 'ab')
+            elif snc_sim_model.source.name[:-1] != 'salt':
                 sim_par['mb'] = snc_sim_model.source_peakmag('bessellb', 'ab')
 
             if 'mw_' in snc_sim_model.effect_names:

@@ -7,6 +7,7 @@ import pandas as pd
 from .constants import C_LIGHT_KMS
 from . import nb_fun as nbf
 from . import dust_utils as dst_ut
+from . import utils as ut
 
 
 class BasicAstrObj(abc.ABC):
@@ -348,3 +349,79 @@ class SNIa(BasicAstrObj):
     def mag_sct(self):
         """SN coherent scattering term."""
         return self._params['mag_sct']
+
+
+
+
+
+class SNII(BasicAstrObj):
+    """SNII class.
+
+    Parameters
+    ----------
+    sn_par : dict
+        Parameters of the SN.
+
+      | same as BasicAstrObj parameters
+      | └── mag_sct, coherent mag scattering.
+    sim_model : sncosmo.Model
+        sncosmo Model to use.
+    model_par : dict
+        General model parameters.
+
+      | same as BasicAstrObj model_par
+      | ├── M0, SNIa absolute magnitude
+      | ├── sigM, sigma of coherent scattering
+      | └── used model parameters
+    """
+    _type = 'snII'
+    _available_models =ut.Templatelist_SNII_fromsncosmo()
+    _attrs = ['sim_mb', 'mag_sct']
+
+    def __init__(self, sn_par, sim_model, model_par):
+        super().__init__(sn_par, sim_model, model_par)
+        self._base_attrs = super()._base_attrs + self._attrs
+
+    def _update_model_par(self):
+        """Extract and compute SN parameters that depends on used model.
+
+        Notes
+        -----
+        Set attributes dependant on SN model
+       
+            - mb -> self.sim_mb
+            - amplitude -> self.sim_amplitude
+            - Template -> self.template  Sed template used 
+           
+        """
+        M0 = self._model_par['M0'] + 0.76 + self.mag_sct #fine tuned mag_sct and offset to reproduce R-band abs magn mean and rms from Li et al 2011
+        self._params['M0'] = M0
+        if self.sim_model.source.name in self._available_models:
+            self._params['Template']=self.sim_model.source.name
+            mb = self.sim_mu + M0
+    
+            if 'dip_dM' in self._params:
+                mb += self._params['dip_dM']
+
+            self.sim_mb = mb
+
+            # Compute the amplitude  parameter
+            self.sim_model.set_source_peakmag(self.sim_mb, 'bessellb', 'ab')
+            self.sim_amplitude = self.sim_model.get('amplitude')
+            self._params['sncosmo']['amplitude'] = self.sim_amplitude
+
+    @property
+    def mag_sct(self):
+        """SN coherent scattering term."""
+        return self._params['mag_sct']
+        
+    @property
+    def M0(self):
+        """SN absolute magnitude in B-band"""
+        return self._params['M0']
+
+    @property
+    def Template(self):
+        """sncosmo.Model source name """
+        return self._params['Template']
+    
