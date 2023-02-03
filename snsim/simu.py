@@ -290,6 +290,7 @@ class Simulator:
         # -- Compute time range, rate and zcdf for each of the selected obj.
         for use_rate, gen in zip(self._use_rate, self.generators):
             gen.print_config()
+            print('\n-----------------------------------------------------------\n')
 
             # -- Set the time range with time edges effects
             peak_time_range = self.peak_time_range(gen.snc_model_time)
@@ -481,7 +482,7 @@ class Simulator:
             param_tmp = generator.gen_astrobj_par(n_to_sim, rand_gen.integers(1000, 1e6))
 
             # -- Set up obj parameters
-            model_t_range = (generator.sim_model.mintime(), generator.sim_model.maxtime())
+            model_t_range = (generator.snc_model_time[0], generator.snc_model_time[1])
 
             zobs, MinT, MaxT = ut.zobs_MinT_MaxT(param_tmp, model_t_range)
 

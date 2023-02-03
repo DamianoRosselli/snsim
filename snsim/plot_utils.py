@@ -34,7 +34,7 @@ def param_text_box(text_ax, model_name, sim_par=None, fit_par=None, pos=[0.01, 0
         if model == 'salt':
             par = {**par, **par_dic_salt[model]}
         elif model != 'salt':
-            par_dic_no_salt = {model: {'t0': ('$t_0$', '.2f'), 'amplitude': ('amplitude', '.2e'),'mb': ('$m_b$', '.2f')},
+            par_dic_no_salt = {model: {'t0': ('$t_0$', '.2f'), 'amplitude': ('$amplitude$', '.2e'),'mb': ('$m_b$', '.2f')},
                                'mw_': {'mw_r_v': ('$R_v$', '.2f'), 'mw_ebv': ('E(B-V)', '.3f')}}
             par = {**par,**par_dic_no_salt[model]}
        

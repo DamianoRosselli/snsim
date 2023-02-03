@@ -7,6 +7,7 @@ from astropy.coordinates import SkyCoord
 from astropy import cosmology as acosmo
 import astropy.units as astu
 from .constants import C_LIGHT_KMS
+from . import constants as cst
 
 
 def gauss(mu, sig, x):
@@ -162,13 +163,17 @@ def set_cosmo(cosmo_dic):
         return acosmo.w0waCDM(**cosmo_dic)
 
 
-def scale_M0_jla(h):
-    """Compute a value of M0 corresponding to JLA results.
+def scale_M0_cosmology(h,M0_art,h_art):
+    """Compute a value of M0 corresponding the cosmology used in the simulation.
 
     Parameters
     ----------
     h : float
         The H0 / 100 constant to scale M0.
+    M0_art: float
+            M0 value to be scaled
+    h_art: float
+          the H0/100 constant used in the article to retrive M0_art
 
     Returns
     -------
@@ -181,12 +186,9 @@ def scale_M0_jla(h):
     # with dH0 = (H0_jla - H0_True)/ H0_True
     # MB_True = MB_jla - 5 * log10(1 + dH0)
 
-    # Scale the H0 value of JLA to the H0 value of sim
-    h_jla = 0.7  # H0 = 70 Mpc / km / s
-    M0_jla = -19.05
-    dh = (h_jla - h) / h
+    dh=(h_art - h)/h
+    return M0_art - 5 * np.log10(1 + dh)
 
-    return M0_jla - 5 * np.log10(1 + dh)
 
 
 def init_astropy_time(date):
@@ -330,21 +332,7 @@ def init_sn_model(name, model_dir=None):
     return None
 
 
-def init_sn_model_fromsource(name,**kwargs):
-    """Initialise a sncosmo model from built-in sncosmo source.
 
-    Parameters
-    ----------
-    name : str
-        Name of the model.
- 
-    Returns
-    -------
-    sncosmo.Model
-        sncosmo Model corresponding to input configuration.
-    """
-    source = snc.get_source(name,**kwargs)
-    return  snc.Model(source=source)
 
 
 def snc_fitter(lc, fit_model, fit_par, **kwargs):
@@ -448,17 +436,45 @@ def print_dic(dic, prefix=''):
             print_dic(dic[K], prefix=prefix + indent)
         else:
             print(prefix + f'{K}: {dic[K]}')
-            
-            
-            
-def Templatelist_SNII_fromsncosmo(): #extract the list on name of built-in sources in sncosmo (for the moment only Vincenzi2019 template)
-	sources = snc.builtins._SOURCES.get_loaders_metadata()
-	iips  = list(source['name'] for source in sources if 'sn ii' in source['type'].lower() and not source['type'].endswith('b') and not source['type'].endswith('n'))
+
+        
+ 
+def Templatelist_fromsncosmo(source_type=None):
+    """ return a list with the names of templates in  sncosmo built-in sources catalogue   """
+
+    if source_type is None:
+        raise ValueError("select the source type")
+    
+    sources = snc.builtins._SOURCES.get_loaders_metadata()
+    
+    if source_type=='sniipl':
+        return list(s['name'] for s in sources if 'sn ii' in s['type'].lower() and not s['type'].endswith('b') and not s['type'].endswith('n'))
+
+    elif source_type=='sniib':
+        return list(s['name'] for s in sources if 'sn ii' in s['type'].lower() and s['type'].endswith('b') and not s['type'].endswith('n'))
+
+    elif source_type=='sniin':
+        return list(s['name'] for s in sources if 'sn ii' in s['type'].lower() and not s['type'].endswith('b') and s['type'].endswith('n'))
+
+    elif source_type=='timeseries':
+        return list(s['name'] for s in sources if s['subclass']=='`~sncosmo.TimeSeriesSource`') 
+        
 		
-	listname=[sn for sn in iips if sn.startswith('v19') and not sn.endswith('corr')]
-		
-	listname.extend(['list'])
-	return listname
+
+
+def select_Vincenzi_template(model_list,corr=None):
+    """Return list of sncosmo Template names from Vincenzi et al. 2019
+    possible to select corrected or not corrected templates"""
+    
+    if corr is None:
+        raise ValueError("select corrected or not corrected templates")
+
+    else:
+        if corr:
+    	    return [sn for sn in model_list if sn.startswith('v19') and sn.endswith('corr')]
+        else:
+            return [sn for sn in model_list if sn.startswith('v19') and not sn.endswith('corr')]
+        
 	
 	
 	

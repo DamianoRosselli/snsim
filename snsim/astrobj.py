@@ -146,6 +146,8 @@ class BasicAstrObj(abc.ABC):
                                      'gain': self.epochs['gain'],
                                      'skynoise': self.epochs['skynoise']})
 
+       
+        
         self._sim_lc.attrs = {**self.sim_lc.attrs,
                               **{'zobs': self.zobs, 't0': self.sim_t0},
                               **self._params['sncosmo']}
@@ -191,6 +193,8 @@ class BasicAstrObj(abc.ABC):
 
         if 'dip_dM' in self._params:
             self.sim_lc.attrs['dip_dM'] = self.dip_dM
+        if 'template' in self._params:
+            self.sim_lc.attrs['template']= self._params['template']
 
     @property
     def ID(self):
@@ -323,6 +327,7 @@ class SNIa(BasicAstrObj):
         """
         M0 = self._model_par['M0'] + self.mag_sct
         if self.sim_model.source.name in ['salt2', 'salt3']:
+            self._params['template']=self.sim_model.source.name
             # Compute mB : { mu + M0 : the standard magnitude} + {-alpha*x1 +
             # beta*c : scattering due to color and stretch} + {coherent intrinsic scattering}
             alpha = self._model_par['alpha']
@@ -352,15 +357,13 @@ class SNIa(BasicAstrObj):
 
 
 
-
-
-class SNII(BasicAstrObj):
-    """SNII class.
+class TimeSeries(BasicAstrObj):
+    """TimeSeries class.
 
     Parameters
     ----------
     sn_par : dict
-        Parameters of the SN.
+        Parameters of the object.
 
       | same as BasicAstrObj parameters
       | └── mag_sct, coherent mag scattering.
@@ -370,12 +373,12 @@ class SNII(BasicAstrObj):
         General model parameters.
 
       | same as BasicAstrObj model_par
-      | ├── M0, SNIa absolute magnitude
+      | ├── M0,  absolute magnitude
       | ├── sigM, sigma of coherent scattering
       | └── used model parameters
     """
-    _type = 'snII'
-    _available_models =ut.Templatelist_SNII_fromsncosmo()
+    _type = 'sncosmo.TimeSeries'
+    _available_models =ut.Templatelist_fromsncosmo('timeseries')
     _attrs = ['sim_mb', 'mag_sct']
 
     def __init__(self, sn_par, sim_model, model_par):
@@ -391,13 +394,13 @@ class SNII(BasicAstrObj):
        
             - mb -> self.sim_mb
             - amplitude -> self.sim_amplitude
-            - Template -> self.template  Sed template used 
+            - Template -> self._params['template']  Sed template used 
            
         """
-        M0 = self._model_par['M0'] + 0.76 + self.mag_sct #fine tuned mag_sct and offset to reproduce R-band abs magn mean and rms from Li et al 2011
+        M0 = self._model_par['M0'] +  self.mag_sct 
         self._params['M0'] = M0
         if self.sim_model.source.name in self._available_models:
-            self._params['Template']=self.sim_model.source.name
+            self._params['template']=self.sim_model.source.name
             mb = self.sim_mu + M0
     
             if 'dip_dM' in self._params:
@@ -406,7 +409,7 @@ class SNII(BasicAstrObj):
             self.sim_mb = mb
 
             # Compute the amplitude  parameter
-            self.sim_model.set_source_peakmag(self.sim_mb, 'bessellb', 'ab')
+            self.sim_model.set_source_peakmag(self.sim_mb, 'bessellr', 'ab')
             self.sim_amplitude = self.sim_model.get('amplitude')
             self._params['sncosmo']['amplitude'] = self.sim_amplitude
 
@@ -421,7 +424,69 @@ class SNII(BasicAstrObj):
         return self._params['M0']
 
     @property
-    def Template(self):
+    def template(self):
         """sncosmo.Model source name """
-        return self._params['Template']
+        return self._params['template']
+    
+
+class SNIIpl(TimeSeries):
+    """SNII P/L class.
+
+    Parameters
+    ----------
+   same as TimeSeries class   """
+    _type = 'snIIpl'
+    _available_models =ut.Templatelist_fromsncosmo('sniipl')
+
+    def __init__(self, sn_par, sim_model, model_par):
+        super().__init__(sn_par, sim_model, model_par)
+        self._base_attrs = super()._base_attrs + self._attrs
+
+    def _update_model_par(self):
+        """Extract and compute SN parameters that depends on used model    
+        """
+        super()._update_model_par()
+
+
+class SNIIb(TimeSeries):
+    """SNIIb class.
+
+    Parameters
+    ----------
+   same as TimeSeries class   """
+    _type = 'snIIb'
+    _available_models =ut.Templatelist_fromsncosmo('sniib')
+
+    def __init__(self, sn_par, sim_model, model_par):
+        super().__init__(sn_par, sim_model, model_par)
+        self._base_attrs = super()._base_attrs + self._attrs
+
+    def _update_model_par(self):
+        """Extract and compute SN parameters that depends on used model    
+        """
+        super()._update_model_par()
+
+
+class SNIIn(TimeSeries):
+    """SNIIn class.
+
+    Parameters
+    ----------
+   same as TimeSeries class   """
+    _type = 'snIIn'
+    _available_models =ut.Templatelist_fromsncosmo('sniin')
+
+    def __init__(self, sn_par, sim_model, model_par):
+        super().__init__(sn_par, sim_model, model_par)
+        self._base_attrs = super()._base_attrs + self._attrs
+    
+
+    def _update_model_par(self):
+        """Extract and compute SN parameters that depends on used model    
+        """
+        super()._update_model_par()
+        
+        
+
+
     
