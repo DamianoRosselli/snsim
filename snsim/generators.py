@@ -976,7 +976,6 @@ class TimeSeriesGen(BaseGen):
         sncosmo.Model
             sncosmo.Model(source) object where source depends on the
             SN simulation model.
-
         """
 
         if isinstance(self._params['model_config']['model_name'], str):
@@ -999,7 +998,6 @@ class TimeSeriesGen(BaseGen):
         
         return model
 
-    #ok for everyone
 
     def _update_general_par(self):
         """Initialise the general parameters, depends on the SN simulation model.
@@ -1100,39 +1098,19 @@ class SNIIplGen(TimeSeriesGen):
         else:
             raise ValueError(f"{self._params['rate']} is not available! Available rate are {self._available_rates}")
 
-        #this should be passed
-
-        
+             
     def _init_M0(self):
         """Initialise absolute magnitude."""
         return super()._init_M0()
         
     
     def _init_sim_model(self):
-        """Initialise sncosmo model using the good source.
-
-        Returns
-        -------
-        sncosmo.Model
-            sncosmo.Model(source) object where source depends on the
-            SN simulation model.
-
-        """
+        """Same as TimeSeriesGen """
         return super()._init_sim_model()
-       
-
-    #ok for everyone
 
     def _update_general_par(self):
-        """Initialise the general parameters, depends on the SN simulation model.
-
-        Returns
-        -------
-        list
-            A dict containing all the usefull keys of the SN model.
-        """
+         """Same as TimeSeriesGen """
         super()._update_general_par()
-       
         return
 
     def _update_astrobj_par(self, n_obj, astrobj_par, seed=None):
@@ -1141,41 +1119,11 @@ class SNIIplGen(TimeSeriesGen):
   
 
     def gen_coh_scatter(self, n_sn, seed=None):
-        """Generate n coherent mag scattering term.
-
-        Parameters
-        ----------
-        n : int
-            Number of mag scattering terms to generate.
-        seed : int, optional
-            Random seed.
-
-        Returns
-        -------
-        numpy.ndarray(float)
-            numpy array containing scattering terms generated.
-
-        """
+        """Same as TimeSeriesGen """
         return super().gen_coh_scatter(n_sn,seed)
     
     def gen_snc_par(self, n_obj, astrobj_par, seed=None):
-        """Generate sncosmo model dependant parameters (others than redshift and t0).
-
-        Parameters
-        ----------
-        n_obj : int
-            Number of parameters to generate.
-        seed : int, optional
-            Random seed
-            .
-
-        Returns
-        -------
-        dict
-            One dictionnary containing 'parameters names': numpy.ndarray(float).
-
-        """
-       
+        """Same as TimeSeriesGen """       
         return None
 
 
@@ -1200,36 +1148,20 @@ class SNIIbGen(TimeSeriesGen):
         else:
             raise ValueError(f"{self._params['rate']} is not available! Available rate are {self._available_rates}")
 
-        #this should be passed
-
-        
+               
     def _init_M0(self):
         """Initialise absolute magnitude."""
         return super()._init_M0()
         
     
     def _init_sim_model(self):
-        """Initialise sncosmo model using the good source.
-
-        Returns
-        -------
-        sncosmo.Model
-            sncosmo.Model(source) object where source depends on the
-            SN simulation model.
-
-        """
+        """Same as TimeSeriesGen """
         return super()._init_sim_model()
 
-    #ok for everyone
+   
 
     def _update_general_par(self):
-        """Initialise the general parameters, depends on the SN simulation model.
-
-        Returns
-        -------
-        list
-            A dict containing all the usefull keys of the SN model.
-        """
+         """Same as TimeSeriesGen """
         super()._update_general_par()
        
         return
@@ -1240,41 +1172,11 @@ class SNIIbGen(TimeSeriesGen):
   
 
     def gen_coh_scatter(self, n_sn, seed=None):
-        """Generate n coherent mag scattering term.
-
-        Parameters
-        ----------
-        n : int
-            Number of mag scattering terms to generate.
-        seed : int, optional
-            Random seed.
-
-        Returns
-        -------
-        numpy.ndarray(float)
-            numpy array containing scattering terms generated.
-
-        """
+        """Same as TimeSeriesGen """
         return super().gen_coh_scatter(n_sn,seed)
     
     def gen_snc_par(self, n_obj, astrobj_par, seed=None):
-        """Generate sncosmo model dependant parameters (others than redshift and t0).
-
-        Parameters
-        ----------
-        n_obj : int
-            Number of parameters to generate.
-        seed : int, optional
-            Random seed
-            .
-
-        Returns
-        -------
-        dict
-            One dictionnary containing 'parameters names': numpy.ndarray(float).
-
-        """
-       
+        """Same as TimeSeriesGen """       
         return None
 
 
@@ -1299,36 +1201,20 @@ class SNIInGen(TimeSeriesGen):
         else:
             raise ValueError(f"{self._params['rate']} is not available! Available rate are {self._available_rates}")
 
-        #this should be passed
-
-        
+               
     def _init_M0(self):
         """Initialise absolute magnitude."""
         return super()._init_M0()
         
     
     def _init_sim_model(self):
-        """Initialise sncosmo model using the good source.
-
-        Returns
-        -------
-        sncosmo.Model
-            sncosmo.Model(source) object where source depends on the
-            SN simulation model.
-
-        """
+        """Same as TimeSeriesGen """
         return super()._init_sim_model()
 
-    #ok for everyone
+   
 
     def _update_general_par(self):
-        """Initialise the general parameters, depends on the SN simulation model.
-
-        Returns
-        -------
-        list
-            A dict containing all the usefull keys of the SN model.
-        """
+        """Same as TimeSeriesGen """
         super()._update_general_par()
        
         return
@@ -1339,41 +1225,11 @@ class SNIInGen(TimeSeriesGen):
   
 
     def gen_coh_scatter(self, n_sn, seed=None):
-        """Generate n coherent mag scattering term.
-
-        Parameters
-        ----------
-        n : int
-            Number of mag scattering terms to generate.
-        seed : int, optional
-            Random seed.
-
-        Returns
-        -------
-        numpy.ndarray(float)
-            numpy array containing scattering terms generated.
-
-        """
+        """Same as TimeSeriesGen """
         return super().gen_coh_scatter(n_sn,seed)
     
     def gen_snc_par(self, n_obj, astrobj_par, seed=None):
-        """Generate sncosmo model dependant parameters (others than redshift and t0).
-
-        Parameters
-        ----------
-        n_obj : int
-            Number of parameters to generate.
-        seed : int, optional
-            Random seed
-            .
-
-        Returns
-        -------
-        dict
-            One dictionnary containing 'parameters names': numpy.ndarray(float).
-
-        """
-       
+        """Same as TimeSeriesGen """       
         return None
         
         

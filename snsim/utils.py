@@ -1,4 +1,4 @@
-"""This module contains usefull function for the simulation."""
+em"""This module contains usefull function for the simulation."""
 
 import numpy as np
 import sncosmo as snc
@@ -440,7 +440,14 @@ def print_dic(dic, prefix=''):
         
  
 def Templatelist_fromsncosmo(source_type=None):
-    """ return a list with the names of templates in  sncosmo built-in sources catalogue   """
+    """ list names of templates in sncosmo built-in sources catalogue  
+    Parameters
+    -----------
+    source_type : str
+                 type of sources could be sniipl,sniib,sniin or timeseries
+    Return
+    ----------
+    list on names of sources with the given source_type from snscomo catalogue """
 
     if source_type is None:
         raise ValueError("select the source type")
@@ -463,8 +470,16 @@ def Templatelist_fromsncosmo(source_type=None):
 
 
 def select_Vincenzi_template(model_list,corr=None):
-    """Return list of sncosmo Template names from Vincenzi et al. 2019
-    possible to select corrected or not corrected templates"""
+    """from a given list of sncosmo Template select the ones from Vincenzi et al. 2019
+    Parameters
+    -----------
+    model_list : list 
+               starting list of templates
+    corr : bool
+          If True select templates that have been corrected for the host galaxy dust
+    Returns
+    ---------
+   list of template names"""
     
     if corr is None:
         raise ValueError("select corrected or not corrected templates")
